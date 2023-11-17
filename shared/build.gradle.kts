@@ -43,7 +43,17 @@ kotlin {
                 implementation(libs.sqldelight.androidDriver)
             }
         }
-        val iosMain by getting {
+
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+
+        val iosMain by creating {
+//            dependsOn(commonMain)
+//            iosX64Main.dependsOn(this)
+//            iosArm64Main.dependsOn(this)
+//            iosSimulatorArm64Main.dependsOn(this)
+
             dependencies {
                 implementation(libs.sqldelight.nativeDriver)
             }
@@ -59,11 +69,11 @@ android {
     }
 }
 
-//sqldelight {
-//    databases {
-//        create("TestDatabase") {
-//            packageName.set("com.techullurgy.tuitiontracker.sqldelight")
-//            srcDirs.setFrom("src/commonMain/kotlin")
-//        }
-//    }
-//}
+sqldelight {
+    databases {
+        create("TestDatabase") {
+            packageName.set("com.techullurgy.tuitiontracker.sqldelight")
+            srcDirs.setFrom("src/commonMain/kotlin")
+        }
+    }
+}

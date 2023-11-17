@@ -9,5 +9,5 @@ plugins {
     @Suppress("DSL_SCOPE_VIOLATION")
     alias(libs.plugins.kotlinMultiplatform).apply(false)
     @Suppress("DSL_SCOPE_VIOLATION")
-    alias(libs.plugins.sqldelightPlugin)
+    alias(libs.plugins.sqldelightPlugin).apply(false)
 }
