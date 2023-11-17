@@ -1,0 +1,151 @@
+CREATE TABLE StudentEntity(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name TEXT NOT NULL,
+    age INTEGER NOT NULL,
+    gender TEXT NOT NULL CHECK (gender IN ('M','F')),
+    standard TEXT NOT NULL,
+    remarks TEXT DEFAULT NULL
+);
+
+CREATE TABLE ActivityEntity(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT NOT NULL,
+    group_key TEXT NOT NULL CHECK (group_key IN ('INDIVIDUAL', 'GENDER', 'STANDARD', 'ALL')),
+    group_value TEXT NOT NULL,
+    created_date INTEGER NOT NULL,
+    expiration_date INTEGER NOT NULL
+);
+
+CREATE TABLE StudentActivitiesEntity(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    student_id INTEGER NOT NULL,
+    activity_id INTEGER NOT NULL,
+    is_completed INTEGER DEFAULT 0 NOT NULL CHECK (is_completed IN (0,1)),
+
+    FOREIGN KEY (student_id) REFERENCES StudentEntity(id) ON DELETE CASCADE,
+    FOREIGN KEY (activity_id) REFERENCES ActivityEntity(id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX idx_student_activity ON StudentActivitiesEntity(student_id, activity_id);
+
+insertStudent:
+INSERT OR REPLACE INTO StudentEntity(name, age, gender, standard) VALUES (?,?,?, ?);
+
+insertActivity:
+INSERT OR REPLACE INTO ActivityEntity(name, description, group_key, group_value, created_date, expiration_date) VALUES (?,?,?,?,?, ?);
+
+insertStudentActivity:
+INSERT OR REPLACE INTO StudentActivitiesEntity(student_id, activity_id) VALUES (?,?);
+
+updateStudentRemarks:
+UPDATE StudentEntity
+SET remarks = :remarks
+WHERE id = :studentId;
+
+updateActivityCompletionStatusForStudent:
+UPDATE StudentActivitiesEntity
+SET is_completed = :isCompleted
+WHERE student_id = :studentId AND activity_id = :activityId;
+
+getAllStudents:
+SELECT * FROM StudentEntity;
+
+getStudentById:
+SELECT * FROM StudentEntity WHERE id = ?;
+
+getAllStudentNames:
+SELECT name FROM StudentEntity;
+
+getStudentIdsByGender:
+SELECT id FROM StudentEntity WHERE gender = :gender;
+
+getStudentIdsByStandard:
+SELECT id FROM StudentEntity WHERE standard = :standard;
+
+getAllStudentIds:
+SELECT id FROM StudentEntity;
+
+getAllActivities:
+SELECT * FROM ActivityEntity;
+
+getActivityById:
+SELECT * FROM ActivityEntity WHERE id = ?;
+
+getActivityIdFor:
+SELECT id FROM ActivityEntity
+WHERE name = :name;
+
+getAllActiveActivities:
+SELECT *
+FROM ActivityEntity
+WHERE expiration_date > ?;
+
+getAllActiveIndividualActivities:
+SELECT *
+FROM ActivityEntity
+WHERE expiration_date > ? AND group_key = 'INDIVIDUAL';
+
+getAllActiveGenderActivities:
+SELECT *
+FROM ActivityEntity
+WHERE expiration_date > ? AND group_key = 'GENDER';
+
+getAllActiveMaleActivities:
+SELECT *
+FROM ActivityEntity
+WHERE expiration_date > ? AND group_key = 'GENDER' AND group_value = 'M';
+
+getAllActiveFemaleActivities:
+SELECT *
+FROM ActivityEntity
+WHERE expiration_date > ? AND group_key = 'GENDER' AND group_value = 'F';
+
+-- getAllActiveActivitiesForStudent:
+-- SELECT *
+-- FROM ActivityEntity
+-- WHERE expiration_date > :expirationDate AND group_key = 'INDIVIDUAL'
+--     AND group_value IN (SELECT id FROM StudentEntity WHERE id = :studentId)
+-- UNION ALL
+-- SELECT *
+-- FROM ActivityEntity
+-- WHERE expiration_date > :expirationDate AND group_key = 'GENDER'
+--     AND group_value IN (SELECT gender FROM StudentEntity WHERE id = :studentId)
+-- UNION ALL
+-- SELECT *
+-- FROM ActivityEntity
+-- WHERE expiration_date > :expirationDate AND group_key = 'STANDARD'
+--     AND group_value IN (SELECT standard FROM StudentEntity WHERE id = :studentId)
+-- UNION ALL
+-- SELECT *
+-- FROM ActivityEntity
+-- WHERE expiration_date > :expirationDate AND group_key = 'ALL' AND group_value = 'ALL';
+
+getAllAssignedActivitiesForStudent:
+SELECT *
+FROM StudentActivitiesEntity
+WHERE student_id = :studentId;
+
+getAllAssignedStudentsForActivity:
+SELECT *
+FROM StudentActivitiesEntity
+WHERE activity_id = :activityId;
+
+getAllActiveActivitiesForStudent:
+SELECT a.*
+FROM ActivityEntity a
+JOIN StudentActivitiesEntity sa ON a.id = sa.activity_id
+WHERE a.expiration_date > :expirationDate AND sa.student_id = :studentId;
+
+
+getAllCompletedActivitiesForStudent:
+SELECT a.*
+FROM ActivityEntity a
+JOIN StudentActivitiesEntity sa ON a.id = sa.activity_id
+WHERE a.expiration_date > :expirationDate AND sa.student_id = :studentId AND sa.is_completed = 1;
+
+getAllIncompletedActivitiesForStudent:
+SELECT a.*
+FROM ActivityEntity a
+JOIN StudentActivitiesEntity sa ON a.id = sa.activity_id
+WHERE a.expiration_date > :expirationDate AND sa.student_id = :studentId AND sa.is_completed = 0;
