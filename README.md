@@ -81,6 +81,7 @@ To have a dedicated tracking application for tuition teachers about their studen
 * **Jetpack Compose**
 * **Jetpack Navigation Compose**
 * **Material3 Theme for dark/light**
+* **Custom DatePicker and OptionsPicker Dialog in Jetpack Compose**
 * **Kotlinx Coroutines**
 * **Enter/Exit Navigation Animations in Jetpack Compose**
 * **MVVM Architecture**
@@ -95,4 +96,5 @@ To have a dedicated tracking application for tuition teachers about their studen
 * **SwiftUI**
 * **Asynchronous Programming in Swift**
 * **MVVM Architecture**
+* **Light/Dark Theme support**
 
