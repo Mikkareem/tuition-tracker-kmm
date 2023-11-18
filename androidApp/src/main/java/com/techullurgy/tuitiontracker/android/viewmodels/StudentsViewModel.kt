@@ -63,6 +63,13 @@ class StudentsViewModel: ViewModel() {
         }
     }
 
+    fun deleteStudent(studentId: Long) {
+        viewModelScope.launch {
+            studentsRepository.deleteStudent(studentId = studentId)
+            loadStudents()
+        }
+    }
+
     fun reset() {
         loadingState = LoadingState.Undefined
     }

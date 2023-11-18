@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.techullurgy.tuitiontracker.android.domain.Repositories
 import com.techullurgy.tuitiontracker.data.StudentWorkActivitiesRepository
+import com.techullurgy.tuitiontracker.data.WorkActivitiesRepository
 import com.techullurgy.tuitiontracker.data.models.AssignedWorkActivity
 import com.techullurgy.tuitiontracker.data.models.WorkActivity
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 class WorkActivityDetailsViewModel: ViewModel() {
 
     private val studentWorkActivitiesRepository: StudentWorkActivitiesRepository = Repositories.studentWorkActivitiesRepository
+    private val workActivitiesRepository: WorkActivitiesRepository = Repositories.workActivitiesRepository
 
     private val _workActivityDetailsScreenUIState = MutableStateFlow(
         WorkActivityDetailsScreenUIState()
@@ -30,18 +32,35 @@ class WorkActivityDetailsViewModel: ViewModel() {
                     activityId = assignedActivity.workActivity.id,
                     isCompleted = !assignedActivity.isCompleted
                 )
+                loadActivityAssignedStudents(assignedActivity.workActivity.id)
             } catch (e: Exception) {
                 println(e.localizedMessage)
             }
         }
     }
 
-    suspend fun loadActivityAssignedStudents(activity: WorkActivity) {
+    suspend fun loadWorkActivityDetails(activityId: Long) {
         try {
-            val assignedActivities = studentWorkActivitiesRepository.getAssignedStudentsForActivity(activityId = activity.id)
+            val activity = workActivitiesRepository.getWorkActivityById(workActivityId = activityId)
             _workActivityDetailsScreenUIState.update {
                 it.copy(
-                    assignedActivities = assignedActivities
+                    activity = activity
+                )
+            }
+            activity?.let {
+                loadActivityAssignedStudents(it.id)
+            }
+        } catch(e: Exception) {
+            println(e.localizedMessage)
+        }
+    }
+
+    private suspend fun loadActivityAssignedStudents(activityId: Long) {
+        try {
+            val assignedStudents = studentWorkActivitiesRepository.getAssignedStudentsForActivity(activityId = activityId)
+            _workActivityDetailsScreenUIState.update {
+                it.copy(
+                    assignedStudents = assignedStudents
                 )
             }
         } catch (e: Exception) {
@@ -51,5 +70,6 @@ class WorkActivityDetailsViewModel: ViewModel() {
 }
 
 data class WorkActivityDetailsScreenUIState(
-    val assignedActivities: List<AssignedWorkActivity> = emptyList()
+    val activity: WorkActivity? = null,
+    val assignedStudents: List<AssignedWorkActivity> = emptyList()
 )

@@ -38,6 +38,15 @@ INSERT OR REPLACE INTO ActivityEntity(name, description, group_key, group_value,
 insertStudentActivity:
 INSERT OR REPLACE INTO StudentActivitiesEntity(student_id, activity_id) VALUES (?,?);
 
+deleteStudent:
+DELETE FROM StudentEntity WHERE id = :studentId;
+
+deleteWorkActivity:
+DELETE FROM ActivityEntity WHERE id = :activityId;
+
+deleteStudentActivity:
+DELETE FROM StudentActivitiesEntity WHERE id = :assignedActivityId;
+
 updateStudentRemarks:
 UPDATE StudentEntity
 SET remarks = :remarks

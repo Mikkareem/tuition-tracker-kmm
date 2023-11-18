@@ -31,7 +31,7 @@ class WorkActivitiesViewModel: ViewModel() {
             name = name,
             description = description,
             groupKey = groupKey,
-            groupValue = groupValue,
+            groupValue = if(groupKey == "GENDER") groupValue[0].toString() else groupValue,
             createdDate = createdDate,
             expirationDate = expirationDate
         )

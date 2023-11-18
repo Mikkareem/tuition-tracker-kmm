@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
@@ -40,6 +41,9 @@ fun StudentListScreen(
     navigateToAddStudentScreen: () -> Unit = {}
 ) {
 
+    val bodySmallTextStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = LocalTextStyle.current.fontFamily)
+    val titleLargeTextStyle = MaterialTheme.typography.titleLarge.copy(fontFamily = LocalTextStyle.current.fontFamily)
+
     val screenState by viewModel.studentsScreenUIState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -59,7 +63,7 @@ fun StudentListScreen(
         ) {
             Text(
                 text = "My Students",
-                style = MaterialTheme.typography.titleLarge,
+                style = titleLargeTextStyle,
                 color = MaterialTheme.colorScheme.contentColorFor(
                     MaterialTheme.colorScheme.background
                 )
@@ -80,14 +84,17 @@ fun StudentListScreen(
                     text = "No students available right now. Please add new students to show in this list.",
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = bodySmallTextStyle,
                     modifier = Modifier.fillMaxWidth(.6f)
                 )
             }
         } else {
             LazyColumn {
                 items(screenState.students) { student ->
-                    StudentRow(student = student) {
+                    StudentRow(
+                        student = student,
+                        onDelete = viewModel::deleteStudent
+                    ) {
                         navigateToStudentDetailsScreen(it.id)
                     }
                 }

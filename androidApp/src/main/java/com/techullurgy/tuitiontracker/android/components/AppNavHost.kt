@@ -5,6 +5,8 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,6 +20,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.techullurgy.tuitiontracker.android.screens.AddStudentScreen
 import com.techullurgy.tuitiontracker.android.screens.AddWorkActivityScreen
@@ -135,15 +138,18 @@ private fun NavGraphBuilder.animatedComposable(
     }
 }
 
+private fun isRouteAvailable(navController: NavController, route: String): Boolean {
+    return navController.currentBackStack.value.any { it.destination.route == route }
+}
+
 
 @Composable
 private inline fun <reified T: ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController, route: String): T {
-    return navController.findDestination(route)?.let {
-        val parentBackStackEntry = remember(this) {
-            navController.getBackStackEntry(route)
-        }
-        viewModel(viewModelStoreOwner = parentBackStackEntry)
-    } ?: viewModel()
+    val isAvailable = isRouteAvailable(navController = navController, route = route)
+    return if(isAvailable) {
+        val parentEntry = remember(this) { navController.getBackStackEntry(route) }
+        viewModel(viewModelStoreOwner = parentEntry)
+    } else { viewModel() }
 }
 
 
@@ -193,12 +199,28 @@ private fun NavBackStackEntry.GetStudentDetailsScreen(navController: NavControll
         navController.popBackStack()
     }
 
+    val navigateToAddIndividualWorkActivityScreen: (Long) -> Unit = {
+        navController.navigate("${Screen.AddIndividualActivity.baseRoute}?STUDENT_ID=$it")
+    }
+
     val studentId = arguments?.getLong("STUDENT_ID")!!
+
+    LaunchedEffect(studentId) {
+        viewModel.loadStudentDetails(studentId = studentId)
+    }
+
+    val backStackState by navController.currentBackStackEntryAsState()
+
+    LaunchedEffect(backStackState) {
+        if(backStackState?.destination?.route == Screen.StudentDetails.route) {
+            viewModel.refresh()
+        }
+    }
 
     StudentDetailScreen(
         viewModel = viewModel,
-        studentId = studentId,
-        navigateBack = navigateBack
+        navigateBack = navigateBack,
+        navigateToAddIndividualWorkActivityScreen = navigateToAddIndividualWorkActivityScreen
     )
 }
 
@@ -212,9 +234,12 @@ private fun NavBackStackEntry.GetWorkActivityDetailsScreen(navController: NavCon
 
     val activityId = arguments?.getLong("ACTIVITY_ID")!!
 
+    LaunchedEffect(activityId) {
+        viewModel.loadWorkActivityDetails(activityId = activityId)
+    }
+
     WorkActivityDetailScreen(
         viewModel = viewModel,
-        activityId = activityId,
         navigateBack = navigateBack
     )
 }

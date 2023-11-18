@@ -1,15 +1,17 @@
 package com.techullurgy.tuitiontracker.android.components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -25,24 +27,25 @@ import androidx.compose.ui.unit.dp
 import com.techullurgy.tuitiontracker.data.models.Student
 
 @Composable
-fun StudentRow(
+fun AssignedStudentRow(
     student: Student,
-    onDelete: (Long) -> Unit,
-    onClick: (Student) -> Unit
+    isCompleted: Boolean,
+    onCompletionChange: (Boolean) -> Unit
 ) {
-    val containerColor: Color = if(student.gender == "M") MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer
+    val containerColor: Color = MaterialTheme.colorScheme.tertiaryContainer
 
+    val labelMediumTextStyle = MaterialTheme.typography.labelMedium.copy(fontFamily = LocalTextStyle.current.fontFamily)
     val labelLargeTextStyle = MaterialTheme.typography.labelLarge.copy(fontFamily = LocalTextStyle.current.fontFamily)
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .padding(4.dp)
             .fillMaxWidth()
             .height(60.dp)
             .clip(RoundedCornerShape(10))
             .background(containerColor)
-            .clickable { onClick(student) }
             .padding(vertical = 8.dp, horizontal = 16.dp)
     ) {
         Text(
@@ -50,9 +53,24 @@ fun StudentRow(
             style = labelLargeTextStyle,
             color = MaterialTheme.colorScheme.contentColorFor(containerColor)
         )
-        Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = { onDelete(student.id) }) {
-            Icon(imageVector = Icons.Outlined.Delete, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+        Crossfade(targetState = isCompleted, label = "") {
+            if(it) {
+                IconButton(onClick = { onCompletionChange(false) }) {
+                    Icon(
+                        imageVector = Icons.Default.Done,
+                        contentDescription = "Done",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
+            } else {
+                Text(
+                    text = "Complete",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = labelMediumTextStyle,
+                    modifier = Modifier.clickable { onCompletionChange(true) }
+                )
+            }
         }
     }
 }

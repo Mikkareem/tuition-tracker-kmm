@@ -31,6 +31,9 @@ interface WorkActivitiesRepository {
 
     @Throws(Exception::class)
     suspend fun getAllFemaleWorkActivities(): List<WorkActivity>
+
+    @Throws(Exception::class)
+    suspend fun deleteWorkActivity(activityId: Long)
 }
 
 internal class WorkActivitiesRepositoryImpl(
@@ -39,6 +42,7 @@ internal class WorkActivitiesRepositoryImpl(
 
     private val queries: TuitionQueries = testDatabase.tuitionQueries
 
+    @Throws(Exception::class)
     override suspend fun getAllWorkActivities(): List<WorkActivity> {
         return withContext(Dispatchers.IO) {
             queries.getAllActivities { id, name, description, group_key, group_value, created_date, expiration_date ->
@@ -55,6 +59,7 @@ internal class WorkActivitiesRepositoryImpl(
         }
     }
 
+    @Throws(Exception::class)
     override suspend fun addWorkActivity(workActivity: WorkActivity) {
         withContext(Dispatchers.IO) {
             testDatabase.transaction {
@@ -98,7 +103,19 @@ internal class WorkActivitiesRepositoryImpl(
     }
 
     override suspend fun getWorkActivityById(workActivityId: Long): WorkActivity? {
-        TODO("Not yet implemented")
+        return withContext(Dispatchers.IO) {
+            queries.getActivityById(workActivityId) { id, name, description, group_key, group_value, created_date, expiration_date ->
+                WorkActivity(
+                    id = id,
+                    name = name,
+                    description = description,
+                    groupKey = group_key,
+                    groupValue = group_value,
+                    createdDate = created_date.toLocalDate(),
+                    expirationDate = expiration_date.toLocalDate()
+                )
+            }.executeAsOneOrNull()
+        }
     }
 
     override suspend fun getAllIndividualWorkActivities(): List<WorkActivity> {
@@ -115,5 +132,14 @@ internal class WorkActivitiesRepositoryImpl(
 
     override suspend fun getAllFemaleWorkActivities(): List<WorkActivity> {
         TODO("Not yet implemented")
+    }
+
+    @Throws(Exception::class)
+    override suspend fun deleteWorkActivity(activityId: Long) {
+        withContext(Dispatchers.IO) {
+            testDatabase.transaction {
+                queries.deleteWorkActivity(activityId)
+            }
+        }
     }
 }

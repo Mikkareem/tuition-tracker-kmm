@@ -21,6 +21,9 @@ interface StudentsRepository {
 
     @Throws(Exception::class)
     suspend fun updateStudentRemarks(studentId: Long, remarks: String)
+
+    @Throws(Exception::class)
+    suspend fun deleteStudent(studentId: Long)
 }
 
 internal class StudentsRepositoryImpl(
@@ -84,6 +87,15 @@ internal class StudentsRepositoryImpl(
         withContext(Dispatchers.IO) {
             testDatabase.transaction {
                 queries.updateStudentRemarks(studentId = studentId, remarks = remarks)
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    override suspend fun deleteStudent(studentId: Long) {
+        withContext(Dispatchers.IO) {
+            testDatabase.transaction {
+                queries.deleteStudent(studentId)
             }
         }
     }

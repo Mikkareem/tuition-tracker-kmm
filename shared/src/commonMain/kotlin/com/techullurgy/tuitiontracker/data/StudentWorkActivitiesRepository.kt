@@ -30,6 +30,9 @@ interface StudentWorkActivitiesRepository {
 
     @Throws(Exception::class)
     suspend fun updateActivityCompletionStatusForStudent(studentId: Long, activityId: Long, isCompleted: Boolean)
+
+    @Throws(Exception::class)
+    suspend fun deleteAssignedActivity(assignedActivity: Long)
 }
 
 internal class StudentWorkActivitiesRepositoryImpl(
@@ -133,6 +136,15 @@ internal class StudentWorkActivitiesRepositoryImpl(
                     studentId = studentId,
                     activityId = activityId
                 )
+            }
+        }
+    }
+
+    @Throws(Exception::class)
+    override suspend fun deleteAssignedActivity(assignedActivity: Long) {
+        withContext(Dispatchers.IO) {
+            testDatabase.transaction {
+                queries.deleteStudentActivity(assignedActivity)
             }
         }
     }

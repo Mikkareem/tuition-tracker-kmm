@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -127,13 +129,14 @@ fun AddWorkActivityScreen(
             )
         }
 
-        val addStudent: () -> Unit = {
-            viewModel.addWorkActivity(name = activityName,
-                description= activityDescription,
-                groupKey= activityGroupKey,
-                groupValue= activityGroupValue,
-                createdDate= activityCreationDate.toLocalDate(),
-                expirationDate= activityExpirationDate.toLocalDate()
+        val addWorkActivity: () -> Unit = {
+            viewModel.addWorkActivity(
+                name = activityName,
+                description = activityDescription,
+                groupKey = activityGroupKey,
+                groupValue = activityGroupValue,
+                createdDate = activityCreationDate.toLocalDate(),
+                expirationDate = activityExpirationDate.toLocalDate()
             )
         }
 
@@ -141,8 +144,7 @@ fun AddWorkActivityScreen(
             if(isAllFieldsValid()) {
                 hasError = false
 
-                addStudent()
-                navigateBack()
+                addWorkActivity()
             } else {
                 hasError = true
                 errorMessage = getErrorMessage()
@@ -154,34 +156,42 @@ fun AddWorkActivityScreen(
             errorMessage = ""
         }
 
-        AddWorkActivityScreen(
-            activityName = activityName,
-            activityDescription = activityDescription,
-            activityGroupKey = activityGroupKey,
-            activityGroupValue = activityGroupValue,
-            activityCreationDate = activityCreationDate,
-            activityExpirationDate = activityExpirationDate,
-            hasError = hasError,
-            errorMessage = errorMessage,
-            onActivityNameChange = { activityName = it },
-            onActivityDescriptionChange = { activityDescription = it },
-            onActivityGroupKeyChange = {
-                activityGroupKey = it
-                activityGroupValue = when(it) {
-                    "GENDER" -> "Male"
-                    "STANDARD" -> "1"
-                    "ALL" -> "ALL"
-                    else -> ""
-                }
-            },
-            onActivityGroupValueChange = { activityGroupValue = it },
-            onActivityCreationDateChange = { activityCreationDate = it },
-            onActivityExpirationDateChange = { activityExpirationDate = it },
-            onSaveClick = onSaveClick,
-            onErrorAlertDismiss = onErrorAlertDismiss,
-            navigateBack = navigateBack,
-            isToAddIndividualActivity = isToAddIndividualActivity,
-        )
+        if(isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(
+                    trackColor = MaterialTheme.colorScheme.primary
+                )
+            }
+        } else {
+            AddWorkActivityScreen(
+                activityName = activityName,
+                activityDescription = activityDescription,
+                activityGroupKey = activityGroupKey,
+                activityGroupValue = activityGroupValue,
+                activityCreationDate = activityCreationDate,
+                activityExpirationDate = activityExpirationDate,
+                hasError = hasError,
+                errorMessage = errorMessage,
+                onActivityNameChange = { activityName = it },
+                onActivityDescriptionChange = { activityDescription = it },
+                onActivityGroupKeyChange = {
+                    activityGroupKey = it
+                    activityGroupValue = when (it) {
+                        "GENDER" -> "Male"
+                        "STANDARD" -> "1"
+                        "ALL" -> "ALL"
+                        else -> ""
+                    }
+                },
+                onActivityGroupValueChange = { activityGroupValue = it },
+                onActivityCreationDateChange = { activityCreationDate = it },
+                onActivityExpirationDateChange = { activityExpirationDate = it },
+                onSaveClick = onSaveClick,
+                onErrorAlertDismiss = onErrorAlertDismiss,
+                navigateBack = navigateBack,
+                isToAddIndividualActivity = isToAddIndividualActivity,
+            )
+        }
     }
 }
 

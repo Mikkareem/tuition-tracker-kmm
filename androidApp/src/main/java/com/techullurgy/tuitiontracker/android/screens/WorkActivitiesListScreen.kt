@@ -14,6 +14,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
@@ -36,6 +37,9 @@ fun WorkActivitiesListScreen(
     navigateToAddWorkActivityScreen: () -> Unit
 ) {
 
+    val bodySmallTextStyle = MaterialTheme.typography.bodySmall.copy(fontFamily = LocalTextStyle.current.fontFamily)
+    val titleLargeTextStyle = MaterialTheme.typography.titleLarge.copy(fontFamily = LocalTextStyle.current.fontFamily)
+
     val screenState by viewModel.workActivitiesScreenState.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -54,7 +58,7 @@ fun WorkActivitiesListScreen(
         ) {
             Text(
                 text = "Activities",
-                style = MaterialTheme.typography.titleLarge,
+                style = titleLargeTextStyle,
                 color = MaterialTheme.colorScheme.contentColorFor(
                     MaterialTheme.colorScheme.background
                 )
@@ -67,6 +71,7 @@ fun WorkActivitiesListScreen(
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(48.dp)
                 )
+
             }
         }
         if(screenState.activities.isEmpty()) {
@@ -75,7 +80,7 @@ fun WorkActivitiesListScreen(
                     text = "No activities available right now. Please add new activities to show in this list.",
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = bodySmallTextStyle,
                     modifier = Modifier.fillMaxWidth(.6f)
                 )
             }

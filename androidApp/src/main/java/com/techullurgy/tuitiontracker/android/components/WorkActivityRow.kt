@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
@@ -33,6 +34,8 @@ fun WorkActivityRow(
         MaterialTheme.colorScheme.primaryContainer
     }
 
+    val labelLargeTextStyle = MaterialTheme.typography.labelLarge.copy(fontFamily = LocalTextStyle.current.fontFamily)
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -46,7 +49,7 @@ fun WorkActivityRow(
     ) {
         Text(
             text = activity.name,
-            style = MaterialTheme.typography.labelLarge,
+            style = labelLargeTextStyle,
             color = MaterialTheme.colorScheme.contentColorFor(containerColor)
         )
         Spacer(modifier = Modifier.weight(1f))
