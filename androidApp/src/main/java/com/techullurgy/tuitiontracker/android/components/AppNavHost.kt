@@ -1,5 +1,8 @@
 package com.techullurgy.tuitiontracker.android.components
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -7,8 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -36,15 +41,15 @@ fun AppNavHost(
         startDestination = Screen.Students.route,
         modifier = modifier.padding(12.dp)
     ) {
-        composable(Screen.Students.route) {
+        animatedComposable(Screen.Students.route) {
             it.GetStudentsListScreen(navController = navController)
         }
 
-        composable(Screen.Activities.route) {
+        animatedComposable(Screen.Activities.route) {
             it.GetWorkActivitiesListScreen(navController = navController)
         }
 
-        composable(
+        animatedComposable(
             route = Screen.StudentDetails.route,
             arguments = listOf(
                 navArgument("STUDENT_ID") {
@@ -57,7 +62,7 @@ fun AppNavHost(
             it.GetStudentDetailsScreen(navController = navController)
         }
 
-        composable(
+        animatedComposable(
             route = Screen.ActivityDetails.route,
             arguments = listOf(
                 navArgument("ACTIVITY_ID") {
@@ -70,15 +75,15 @@ fun AppNavHost(
             it.GetWorkActivityDetailsScreen(navController = navController)
         }
 
-        composable(Screen.AddStudent.route) {
+        animatedComposable(Screen.AddStudent.route) {
             it.GetAddStudentScreen(navController = navController)
         }
 
-        composable(Screen.AddGeneralActivity.route) {
+        animatedComposable(Screen.AddGeneralActivity.route) {
             it.GetAddGeneralActivityScreen(navController = navController)
         }
 
-        composable(
+        animatedComposable(
             route = Screen.AddIndividualActivity.route,
             arguments = listOf(
                 navArgument("STUDENT_ID") {
@@ -93,6 +98,42 @@ fun AppNavHost(
     }
 }
 
+private fun NavGraphBuilder.animatedComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit
+) {
+    composable(
+        route = route,
+        arguments = arguments,
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                animationSpec = tween(durationMillis = 700)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                animationSpec = tween(durationMillis = 700)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                animationSpec = tween(durationMillis = 700)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                animationSpec = tween(durationMillis = 700)
+            )
+        }
+    ) {
+        content(it)
+    }
+}
 
 
 @Composable
