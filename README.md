@@ -80,6 +80,7 @@ To have a dedicated tracking application for tuition teachers about their studen
 * **Kotlin**
 * **Jetpack Compose**
 * **Jetpack Navigation Compose**
+* **Material3 Theme for dark/light**
 * **Kotlinx Coroutines**
 * **Enter/Exit Navigation Animations in Jetpack Compose**
 * **MVVM Architecture**
