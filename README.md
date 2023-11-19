@@ -91,6 +91,7 @@ To have a dedicated tracking application for tuition teachers about their studen
 * **SQLDelight** for both Android and iOS SQLite database.
 * **Kotlin**
 * **Kotlinx Coroutines**
+* **KotlinX Datetime**
 * **Expect/Actual Implementations**
 
 #### IOS
