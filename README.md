@@ -81,6 +81,7 @@ To have a dedicated tracking application for tuition teachers about their studen
 * **Jetpack Compose**
 * **Jetpack Navigation Compose**
 * **Material3 Theme for dark/light**
+* **Custom Font(Poppins)**
 * **Custom DatePicker and OptionsPicker Dialog in Jetpack Compose**
 * **Kotlinx Coroutines**
 * **Enter/Exit Navigation Animations in Jetpack Compose**
